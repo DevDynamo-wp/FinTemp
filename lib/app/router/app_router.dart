@@ -1,5 +1,5 @@
 // =============================================================================
-// app_router.dart — Router principal FinTemp (v4 — Auth complet)
+// app_router.dart — Router principal FinTemp (v5 — KYC + Dashboard)
 // =============================================================================
 
 import 'package:flutter/material.dart';
@@ -8,17 +8,15 @@ import 'package:go_router/go_router.dart';
 
 import 'route_names.dart';
 
-// ── Lancement ─────────────────────────────────────────────────────────────────
+// Lancement
 import '../../features/onboarding/presentation/pages/launch/splash_page.dart';
 import '../../features/onboarding/presentation/pages/launch/splash_animated_page.dart';
 import '../../features/onboarding/presentation/pages/launch/language_select_page.dart';
 import '../../features/onboarding/presentation/pages/launch/country_select_page.dart';
 import '../../features/onboarding/presentation/pages/launch/welcome_page.dart';
-
-// ── Onboarding ────────────────────────────────────────────────────────────────
+// Onboarding
 import '../../features/onboarding/presentation/pages/onboarding/onboarding_page.dart';
-
-// ── Auth ──────────────────────────────────────────────────────────────────────
+// Auth
 import '../../features/auth/presentation/pages/login/login_page.dart';
 import '../../features/auth/presentation/pages/login/login_pin_page.dart';
 import '../../features/auth/presentation/pages/login/login_biometric_page.dart';
@@ -28,81 +26,89 @@ import '../../features/auth/presentation/pages/register/password_pages.dart';
 import '../../features/auth/presentation/pages/verify_otp/verify_otp_page.dart';
 import '../../features/auth/presentation/pages/pin/pin_pages.dart';
 import '../../features/auth/presentation/pages/biometric/biometric_setup_page.dart';
+// KYC
+import '../../features/kyc/presentation/pages/kyc_pages.dart';
+// Dashboard
+import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) => GoRouter(
   initialLocation: AppRoutes.splash,
   debugLogDiagnostics: true,
   routes: _routes,
-  errorBuilder: (context, state) => const _NotFoundPage(),
+  errorBuilder: (_, __) => const _NotFoundPage(),
 ));
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
 
 final List<RouteBase> _routes = [
-  // ── Lancement ──────────────────────────────────────────────────────────────
-  GoRoute(path: AppRoutes.splash,         name: 'splash',          builder: (_, __) => const SplashPage()),
-  GoRoute(path: AppRoutes.splashAnimated, name: 'splash-animated', builder: (_, __) => const SplashAnimatedPage()),
-  GoRoute(path: AppRoutes.languageSelect, name: 'language-select', builder: (_, __) => const LanguageSelectPage()),
-  GoRoute(path: AppRoutes.countrySelect,  name: 'country-select',  builder: (_, __) => const CountrySelectPage()),
-  GoRoute(path: AppRoutes.welcome,        name: 'welcome',         builder: (_, __) => const WelcomePage()),
-
-  // ── Onboarding ─────────────────────────────────────────────────────────────
-  GoRoute(path: AppRoutes.onboarding, name: 'onboarding', builder: (_, __) => const OnboardingPage()),
-
-  // ── Auth — Connexion ───────────────────────────────────────────────────────
-  GoRoute(path: AppRoutes.login,          name: 'login',           builder: (_, __) => const LoginPage()),
-  GoRoute(path: AppRoutes.loginPin,       name: 'login-pin',       builder: (_, __) => const LoginPinPage()),
-  GoRoute(path: AppRoutes.loginBiometric, name: 'login-biometric', builder: (_, __) => const LoginBiometricPage()),
-  GoRoute(path: AppRoutes.sessionExpired, name: 'session-expired', builder: (_, __) => const SessionExpiredPage()),
-
-  // ── Auth — Inscription ─────────────────────────────────────────────────────
-  GoRoute(path: AppRoutes.register,        name: 'register',         builder: (_, __) => const RegisterPage()),
-  GoRoute(path: AppRoutes.verifyEmail,     name: 'verify-email',     builder: (_, __) => const VerifyOtpPage(target: 'email', value: 'ko***@gmail.com', nextRoute: '/auth/password/create')),
-  GoRoute(path: AppRoutes.verifyPhone,     name: 'verify-phone',     builder: (_, __) => const VerifyOtpPage(target: 'phone', value: '+229 97 *** **56', nextRoute: '/auth/password/create')),
-  GoRoute(path: AppRoutes.verifyOtp,       name: 'verify-otp',       builder: (_, __) => const VerifyOtpPage()),
-  GoRoute(path: AppRoutes.createPassword,  name: 'create-password',  builder: (_, __) => const CreatePasswordPage()),
-  GoRoute(path: AppRoutes.confirmPassword, name: 'confirm-password', builder: (_, __) => const CreatePasswordPage()),
-
-  // ── Auth — Mot de passe oublié ─────────────────────────────────────────────
-  GoRoute(path: AppRoutes.forgotPassword, name: 'forgot-password', builder: (_, __) => const ForgotPasswordPage()),
-  GoRoute(path: AppRoutes.forgotOtp,      name: 'forgot-otp',      builder: (_, __) => const VerifyOtpPage(target: 'email', value: 'ko***@gmail.com', nextRoute: '/auth/password/reset')),
-  GoRoute(path: AppRoutes.resetPassword,  name: 'reset-password',  builder: (_, __) => const ResetPasswordPage()),
-  GoRoute(path: AppRoutes.resetSuccess,   name: 'reset-success',   builder: (_, __) => const ResetSuccessPage()),
-
-  // ── Auth — PIN & Biométrie ─────────────────────────────────────────────────
-  GoRoute(path: AppRoutes.createPin,  name: 'create-pin',      builder: (_, __) => const CreatePinPage()),
-  GoRoute(path: AppRoutes.confirmPin, name: 'confirm-pin',     builder: (_, state) => ConfirmPinPage(originalPin: (state.extra as String?) ?? '')),
-  GoRoute(path: AppRoutes.biometric,  name: 'biometric-setup', builder: (_, __) => const BiometricSetupPage()),
-
-  // ── KYC (placeholder) ──────────────────────────────────────────────────────
-  GoRoute(path: AppRoutes.kycIntro, name: 'kyc-intro', builder: (_, __) => const _Placeholder(title: 'KYC')),
-
-  // ── Home Shell ─────────────────────────────────────────────────────────────
+  // Lancement
+  GoRoute(path: AppRoutes.splash,         builder: (_, __) => const SplashPage()),
+  GoRoute(path: AppRoutes.splashAnimated, builder: (_, __) => const SplashAnimatedPage()),
+  GoRoute(path: AppRoutes.languageSelect, builder: (_, __) => const LanguageSelectPage()),
+  GoRoute(path: AppRoutes.countrySelect,  builder: (_, __) => const CountrySelectPage()),
+  GoRoute(path: AppRoutes.welcome,        builder: (_, __) => const WelcomePage()),
+  // Onboarding
+  GoRoute(path: AppRoutes.onboarding,     builder: (_, __) => const OnboardingPage()),
+  // Auth
+  GoRoute(path: AppRoutes.login,          builder: (_, __) => const LoginPage()),
+  GoRoute(path: AppRoutes.loginPin,       builder: (_, __) => const LoginPinPage()),
+  GoRoute(path: AppRoutes.loginBiometric, builder: (_, __) => const LoginBiometricPage()),
+  GoRoute(path: AppRoutes.sessionExpired, builder: (_, __) => const SessionExpiredPage()),
+  GoRoute(path: AppRoutes.register,       builder: (_, __) => const RegisterPage()),
+  GoRoute(path: AppRoutes.verifyEmail,    builder: (_, __) => const VerifyOtpPage(target: 'email', value: 'ko***@gmail.com', nextRoute: '/auth/password/create')),
+  GoRoute(path: AppRoutes.verifyPhone,    builder: (_, __) => const VerifyOtpPage(target: 'phone', value: '+229 97 *** **56', nextRoute: '/auth/password/create')),
+  GoRoute(path: AppRoutes.verifyOtp,      builder: (_, __) => const VerifyOtpPage()),
+  GoRoute(path: AppRoutes.createPassword, builder: (_, __) => const CreatePasswordPage()),
+  GoRoute(path: AppRoutes.confirmPassword,builder: (_, __) => const CreatePasswordPage()),
+  GoRoute(path: AppRoutes.forgotPassword, builder: (_, __) => const ForgotPasswordPage()),
+  GoRoute(path: AppRoutes.forgotOtp,      builder: (_, __) => const VerifyOtpPage(target: 'email', value: 'ko***@gmail.com', nextRoute: '/auth/password/reset')),
+  GoRoute(path: AppRoutes.resetPassword,  builder: (_, __) => const ResetPasswordPage()),
+  GoRoute(path: AppRoutes.resetSuccess,   builder: (_, __) => const ResetSuccessPage()),
+  GoRoute(path: AppRoutes.createPin,      builder: (_, __) => const CreatePinPage()),
+  GoRoute(path: AppRoutes.confirmPin,     builder: (_, s)  => ConfirmPinPage(originalPin: (s.extra as String?) ?? '')),
+  GoRoute(path: AppRoutes.biometric,      builder: (_, __) => const BiometricSetupPage()),
+  // KYC
+  GoRoute(path: AppRoutes.kycIntro,       builder: (_, __) => const KycIntroPage()),
+  GoRoute(path: AppRoutes.kycPersonalInfo,builder: (_, __) => const KycPersonalInfoPage()),
+  GoRoute(path: AppRoutes.kycDocument,    builder: (_, __) => const KycDocumentChoicePage()),
+  GoRoute(path: AppRoutes.kycDocumentFront, builder: (_, __) => const KycDocumentCapturePage(isFront: true)),
+  GoRoute(path: AppRoutes.kycDocumentBack,  builder: (_, __) => const KycDocumentCapturePage(isFront: false)),
+  GoRoute(path: AppRoutes.kycSelfie,      builder: (_, __) => const KycSelfiePage()),
+  GoRoute(path: AppRoutes.kycPending,     builder: (_, __) => const KycPendingPage()),
+  GoRoute(path: AppRoutes.kycSuccess,     builder: (_, __) => const KycSuccessPage()),
+  GoRoute(path: AppRoutes.kycFailed,      builder: (_, __) => const KycFailedPage()),
+  GoRoute(path: AppRoutes.kycResubmit,    builder: (_, __) => const KycIntroPage()),
+  GoRoute(path: AppRoutes.kycProofAddress,builder: (_, __) => const KycProofAddressPage()),
+  GoRoute(path: AppRoutes.kycSummary,     builder: (_, __) => const KycSummaryPage()),
+  // Home Shell
   ShellRoute(
     builder: (context, state, child) => _HomeShell(child: child),
     routes: [
-      GoRoute(path: AppRoutes.dashboard, name: 'dashboard', builder: (_, __) => const _Placeholder(title: 'Dashboard')),
-      GoRoute(path: AppRoutes.wallet,    name: 'wallet',    builder: (_, __) => const _Placeholder(title: 'Wallet')),
-      GoRoute(path: AppRoutes.cards,     name: 'cards',     builder: (_, __) => const _Placeholder(title: 'Cartes')),
-      GoRoute(path: AppRoutes.transfers, name: 'transfers', builder: (_, __) => const _Placeholder(title: 'Transferts')),
-      GoRoute(path: AppRoutes.profile,   name: 'profile',   builder: (_, __) => const _Placeholder(title: 'Profil')),
+      GoRoute(path: AppRoutes.dashboard, builder: (_, __) => const DashboardPage()),
+      GoRoute(path: AppRoutes.wallet,    builder: (_, __) => const _Placeholder(title: 'Wallet')),
+      GoRoute(path: AppRoutes.cards,     builder: (_, __) => const _Placeholder(title: 'Cartes')),
+      GoRoute(path: AppRoutes.transfers, builder: (_, __) => const _Placeholder(title: 'Transferts')),
+      GoRoute(path: AppRoutes.profile,   builder: (_, __) => const _Placeholder(title: 'Profil')),
     ],
   ),
-
-  // ── Autres (placeholders) ──────────────────────────────────────────────────
-  GoRoute(path: AppRoutes.payments,      name: 'payments',      builder: (_, __) => const _Placeholder(title: 'Paiements')),
-  GoRoute(path: AppRoutes.history,       name: 'history',       builder: (_, __) => const _Placeholder(title: 'Historique')),
-  GoRoute(path: AppRoutes.notifications, name: 'notifications', builder: (_, __) => const _Placeholder(title: 'Notifications')),
-  GoRoute(path: AppRoutes.statistics,    name: 'statistics',    builder: (_, __) => const _Placeholder(title: 'Statistiques')),
-  GoRoute(path: AppRoutes.savings,       name: 'savings',       builder: (_, __) => const _Placeholder(title: 'Épargne')),
-  GoRoute(path: AppRoutes.investments,   name: 'investments',   builder: (_, __) => const _Placeholder(title: 'Investissements')),
-  GoRoute(path: AppRoutes.loans,         name: 'loans',         builder: (_, __) => const _Placeholder(title: 'Crédit')),
-  GoRoute(path: AppRoutes.settings,      name: 'settings',      builder: (_, __) => const _Placeholder(title: 'Paramètres')),
-  GoRoute(path: AppRoutes.support,       name: 'support',       builder: (_, __) => const _Placeholder(title: 'Support')),
-  GoRoute(path: AppRoutes.showcase,      name: 'showcase',      builder: (_, __) => const _Placeholder(title: 'UI Showcase')),
+  // Autres
+  GoRoute(path: AppRoutes.payments,       builder: (_, __) => const _Placeholder(title: 'Paiements')),
+  GoRoute(path: AppRoutes.paymentScanQr,  builder: (_, __) => const _Placeholder(title: 'Scanner QR')),
+  GoRoute(path: AppRoutes.walletTopUp,    builder: (_, __) => const _Placeholder(title: 'Recharger')),
+  GoRoute(path: AppRoutes.walletReceive,  builder: (_, __) => const _Placeholder(title: 'Recevoir')),
+  GoRoute(path: AppRoutes.history,        builder: (_, __) => const _Placeholder(title: 'Historique')),
+  GoRoute(path: AppRoutes.historyDetail,  builder: (_, __) => const _Placeholder(title: 'Détail transaction')),
+  GoRoute(path: AppRoutes.notifications,  builder: (_, __) => const _Placeholder(title: 'Notifications')),
+  GoRoute(path: AppRoutes.statistics,     builder: (_, __) => const _Placeholder(title: 'Statistiques')),
+  GoRoute(path: AppRoutes.savings,        builder: (_, __) => const _Placeholder(title: 'Épargne')),
+  GoRoute(path: AppRoutes.investments,    builder: (_, __) => const _Placeholder(title: 'Investissements')),
+  GoRoute(path: AppRoutes.loans,          builder: (_, __) => const _Placeholder(title: 'Crédit')),
+  GoRoute(path: AppRoutes.settings,       builder: (_, __) => const _Placeholder(title: 'Paramètres')),
+  GoRoute(path: AppRoutes.support,        builder: (_, __) => const _Placeholder(title: 'Support')),
+  GoRoute(path: AppRoutes.showcase,       builder: (_, __) => const _Placeholder(title: 'UI Showcase')),
 ];
 
-int _locationToIndex(String loc) {
+int _idx(String loc) {
   if (loc.startsWith(AppRoutes.wallet))    return 1;
   if (loc.startsWith(AppRoutes.cards))     return 2;
   if (loc.startsWith(AppRoutes.transfers)) return 3;
@@ -119,13 +125,13 @@ class _HomeShell extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: NavigationBar(
-        selectedIndex: _locationToIndex(loc),
+        selectedIndex: _idx(loc),
         destinations: const [
-          NavigationDestination(icon: Icon(Icons.home_outlined),                    selectedIcon: Icon(Icons.home),                    label: 'Accueil'),
-          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined),  selectedIcon: Icon(Icons.account_balance_wallet),  label: 'Wallet'),
-          NavigationDestination(icon: Icon(Icons.credit_card_outlined),             selectedIcon: Icon(Icons.credit_card),             label: 'Cartes'),
-          NavigationDestination(icon: Icon(Icons.swap_horiz_outlined),              selectedIcon: Icon(Icons.swap_horiz),              label: 'Transferts'),
-          NavigationDestination(icon: Icon(Icons.person_outline),                   selectedIcon: Icon(Icons.person),                  label: 'Profil'),
+          NavigationDestination(icon: Icon(Icons.home_outlined),                   selectedIcon: Icon(Icons.home),                   label: 'Accueil'),
+          NavigationDestination(icon: Icon(Icons.account_balance_wallet_outlined), selectedIcon: Icon(Icons.account_balance_wallet), label: 'Wallet'),
+          NavigationDestination(icon: Icon(Icons.credit_card_outlined),            selectedIcon: Icon(Icons.credit_card),            label: 'Cartes'),
+          NavigationDestination(icon: Icon(Icons.swap_horiz_outlined),             selectedIcon: Icon(Icons.swap_horiz),             label: 'Transferts'),
+          NavigationDestination(icon: Icon(Icons.person_outline),                  selectedIcon: Icon(Icons.person),                 label: 'Profil'),
         ],
         onDestinationSelected: (i) {
           switch (i) {
