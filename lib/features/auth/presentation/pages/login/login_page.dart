@@ -20,6 +20,7 @@ import '../../../../../app/theme/app_text_styles.dart';
 import '../../../../../app/theme/app_spacing.dart';
 import '../../../../../core/design_system/buttons/app_button.dart';
 import '../../../../../core/design_system/inputs/app_text_field.dart';
+import '../../widgets/auth_widgets.dart';
 import '../widgets/auth_widgets.dart';
 
 class LoginPage extends StatefulWidget {

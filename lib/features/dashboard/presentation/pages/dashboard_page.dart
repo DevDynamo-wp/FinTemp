@@ -431,6 +431,7 @@ class _MiniCardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     final isDark  = Theme.of(context).brightness == Brightness.dark;
     final isBlocked = card.status.name == 'blocked';
 
